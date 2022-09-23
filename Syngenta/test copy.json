@@ -1,0 +1,108 @@
+{
+    "aggregate": [
+        {
+            "$addFields": {
+                "port": {
+                    "$toString": "@urlParam.port@"
+                },
+                "level": {
+                    "$toString": "@urlParam.level@"
+                }
+            }
+        },
+        {
+            "$match": {
+                "$expr": {
+                    "$and": [
+                        {
+                            "$eq": [
+                                "$port",
+                                "$data.port"
+                            ]
+                        },
+                        {
+                            "$eq": [
+                                "$level",
+                                "$data.level"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$match": {
+                "deletedAt": {
+                    "$exists": false
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "createdAt": 1,
+                "selectBinHard": 1,
+                "levelHard": 1,
+                "portHard": 1
+            }
+        },
+        {
+            "$lookup": {
+                "from": "FormLog",
+                "let": {
+                    "bin": "$selectBinHard"
+                },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$enterpriseId",
+                                            {
+                                                "$oid": "63078e7def633b001299b7d5"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "$eq": [
+                                            "$collectionName",
+                                            "recordHarvest"
+                                        ]
+                                    },
+                                    {
+                                        "$in": [
+                                            "$$bin",
+                                            "$data.binName"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "trial": "$data.trials"
+                        }
+                    }
+                ],
+                "as": "trials"
+            }
+        },
+        {
+            "$set": {
+                "__trials__": "$trials"
+            }
+        },
+        {
+            "$unwind": "$trials"
+        },
+        {
+            "$set": {
+                "trials": "$trials.trial"
+            }
+        }
+    ]
+}
