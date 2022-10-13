@@ -1,0 +1,173 @@
+{
+    "aggregate": [
+        {
+            "$addFields": {
+                "deviceIdSelected": {
+                    "$concatArrays": [
+                        {
+                            "$map": {
+                                "input": "@deviceIdSelected@",
+                                "as": "json",
+                                "in": {
+                                    "$toObjectId": "$$json"
+                                }
+                            }
+                        },
+                        [
+                            {
+                                "$toObjectId": "6310a530ce49830011784f7b"
+                            }
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "$match": {
+                "$expr": {
+                    "$in": [
+                        "$deviceId",
+                        "$deviceIdSelected"
+                    ]
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "deviceId": 1,
+                "deviceName": 1,
+                "createdAt": 1,
+                "temperatureF": {
+                    "$ifNull": [
+                        "$temperatureF",
+                        {
+                            "$ifNull": [
+                                "$EMSW104temperatureF",
+                                "-"
+                            ]
+                        }
+                    ]
+                },
+                "humidity": {
+                    "$ifNull": [
+                        "$humidity",
+                        {
+                            "$ifNull": [
+                                "$EMSW104humidity",
+                                "-"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$sort": {
+                "createdAt": -1
+            }
+        },
+        {
+            "$group": {
+                "_id": "$deviceId",
+                "device": {
+                    "$first": "$deviceName"
+                },
+                "humidity": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$humidity",
+                                    "-"
+                                ]
+                            },
+                            "then": {
+                                "value": "$humidity",
+                                "name": "$createdAt"
+                            },
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "temperatureF": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$temperatureF",
+                                    "-"
+                                ]
+                            },
+                            "then": {
+                                "value": "$temperatureF",
+                                "name": "$createdAt"
+                            },
+                            "else": "$$REMOVE"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$set": {
+                "fromDate": {
+                    "$last": "$humidity.name"
+                },
+                "toDate": {
+                    "$first": "$humidity.name"
+                }
+            }
+        },
+        {
+            "$lookup": {
+                "from": "Asset",
+                "let": {
+                    "deviceIdSelected": "$_id"
+                },
+                "pipeline": [
+                    {
+                        "$match": {
+                            "enterpriseId": {
+                                "$oid": "63078e7def633b001299b7d5"
+                            }
+                        }
+                    },
+                    {
+                        "$addFields": {
+                            "deviceIdArray": {
+                                "$map": {
+                                    "input": "$properties.attachedDevices",
+                                    "as": "json",
+                                    "in": {
+                                        "$convert": {
+                                            "input": "$$json",
+                                            "to": "objectId"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "$match": {
+                            "$expr": {
+                                "$in": [
+                                    "$$deviceIdSelected",
+                                    "$deviceIdArray"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "nameId": 1
+                        }
+                    }
+                ],
+                "as": "asset"
+            }
+        }
+    ]
+}
