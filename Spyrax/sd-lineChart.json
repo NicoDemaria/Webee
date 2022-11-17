@@ -1,184 +1,202 @@
 {
-    "aggregate": [
-        {
-            "$addFields": {
-                "devicesParam": {
-                    "$map": {
-                        "input": {
-                            "$split": [
-                                "@urlParam.device@",
-                                ","
-                            ]
-                        },
-                        "as": "var",
-                        "in": {
-                            "$convert": {
-                                "input": "$$var",
-                                "to": "objectId",
-                                "onError": "-"
-                            }
-                        }
-                    }
-                }
+  "aggregate": [
+    {
+      "$addFields": {
+        "devicesParam": {
+          "$map": {
+            "input": {
+              "$split": [
+                "@urlParam.device@",
+                ","
+              ]
+            },
+            "as": "var",
+            "in": {
+              "$convert": {
+                "input": "$$var",
+                "to": "objectId",
+                "onError": "-"
+              }
             }
-        },
-        {
-            "$match": {
-                "$expr": {
-                    "$in": [
-                        "$deviceId",
-                        "$devicesParam"
-                    ]
-                }
-            }
-        },
-        {
-            "$project": {
-                "_id": 0,
-                "deviceId": 1,
-                "deviceName": 1,
-                "createdAt": 1,
-                "range": 1,
-                "var": {
-                    "$switch": {
-                        "branches": [
-                            {
-                                "case": {
-                                    "$eq": [
-                                        "@urlParam.var@",
-                                        "temperatureC"
-                                    ]
-                                },
-                                "then": "$temperatureC"
-                            },
-                            {
-                                "case": {
-                                    "$eq": [
-                                        "@urlParam.var@",
-                                        "TempantesdeECO"
-                                    ]
-                                },
-                                "then": "$mappedValue"
-                            }
-                        ],
-                        "default": null
-                    }
-                }
-            }
-        },
-        {
-            "$sort": {
-                "createdAt": -1
-            }
-        },
-        {
-            "$group": {
-                "_id": {
-                    "device": "$deviceId",
-                    "date": {
-                        "$dateFromParts": {
-                            "year": {
-                                "$year": "$createdAt"
-                            },
-                            "month": {
-                                "$month": "$createdAt"
-                            },
-                            "day": {
-                                "$dayOfMonth": "$createdAt"
-                            },
-                            "hour": {
-                                "$hour": "$createdAt"
-                            },
-                            "minute": {
-                                "$subtract": [
-                                    {
-                                        "$minute": "$createdAt"
-                                    },
-                                    {
-                                        "$mod": [
-                                            {
-                                                "$minute": "$createdAt"
-                                            },
-                                            15
-                                        ]
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                },
-                "deviceName": {
-                    "$first": "$deviceName"
-                },
-                "firstSeen": {
-                    "$last": "$createdAt"
-                },
-                "lastSeen": {
-                    "$first": "$createdAt"
-                },
-                "range": {
-                    "$first": "$range"
-                },
-                "varSeries": {
-                    "$push": {
-                        "$cond": {
-                            "if": {
-                                "$ne": [
-                                    {
-                                        "$type": "$var"
-                                    },
-                                    10
-                                ]
-                            },
-                            "then": {
-                                "name": "$createdAt",
-                                "value": "$var"
-                            },
-                            "else": "$$REMOVE"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "$set": {
-                "device": {
-                    "$arrayElemAt": [
-                        "$device.name",
-                        0
-                    ]
-                }
-            }
-        },
-        {
-            "$bucketAuto": {
-                "groupBy": "$_id.device",
-                "buckets": 1,
-                "output": {
-                    "var": {
-                        "$push": {
-                            "name": "$_id.date",
-                            "value": {
-                                "$avg": "$varSeries.value"
-                            },
-                            "min": {
-                                "$min": "$varSeries.value"
-                            },
-                            "max": {
-                                "$max": "$varSeries.value"
-                            }
-                        }
-                    },
-                    "range": {
-                        "$first": "$range"
-                    }
-                }
-            }
-        },
-        {
-            "$set": {
-                "param": "@urlParam.var@"
-            }
+          }
         }
-    ]
+      }
+    },
+    {
+      "$match": {
+        "$expr": {
+          "$in": [
+            "$deviceId",
+            "$devicesParam"
+          ]
+        }
+      }
+    },
+    {
+      "$project": {
+        "_id": 0,
+        "deviceId": 1,
+        "deviceName": 1,
+        "createdAt": 1,
+        "range": 1,
+        "var": {
+          "$switch": {
+            "branches": [
+              {
+                "case": {
+                  "$eq": [
+                    "@urlParam.var@",
+                    "presionCaldera"
+                  ]
+                },
+                "then": "$mappedValue"
+              },
+              {
+                "case": {
+                  "$eq": [
+                    "@urlParam.var@",
+                    "Niveldeaguadecaldera"
+                  ]
+                },
+                "then": "$mappedValue"
+              },
+              {
+                "case": {
+                  "$eq": [
+                    "@urlParam.var@",
+                    "TempantesdeECO"
+                  ]
+                },
+                "then": "$mappedValue"
+              },
+              {
+                "case": {
+                  "$eq": [
+                    "@urlParam.var@",
+                    "temperatureC"
+                  ]
+                },
+                "then": "$temperatureC"
+              }
+            ],
+            "default": null
+          }
+        }
+      }
+    },
+    {
+      "$sort": {
+        "createdAt": -1
+      }
+    },
+    {
+      "$group": {
+        "_id": {
+          "device": "$deviceId",
+          "date": {
+            "$dateFromParts": {
+              "year": {
+                "$year": "$createdAt"
+              },
+              "month": {
+                "$month": "$createdAt"
+              },
+              "day": {
+                "$dayOfMonth": "$createdAt"
+              },
+              "hour": {
+                "$hour": "$createdAt"
+              },
+              "minute": {
+                "$subtract": [
+                  {
+                    "$minute": "$createdAt"
+                  },
+                  {
+                    "$mod": [
+                      {
+                        "$minute": "$createdAt"
+                      },
+                      15
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "deviceName": {
+          "$first": "$deviceName"
+        },
+        "firstSeen": {
+          "$last": "$createdAt"
+        },
+        "lastSeen": {
+          "$first": "$createdAt"
+        },
+        "range": {
+          "$first": "$range"
+        },
+        "varSeries": {
+          "$push": {
+            "$cond": {
+              "if": {
+                "$ne": [
+                  {
+                    "$type": "$var"
+                  },
+                  10
+                ]
+              },
+              "then": {
+                "name": "$createdAt",
+                "value": "$var"
+              },
+              "else": "$$REMOVE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$set": {
+        "device": {
+          "$arrayElemAt": [
+            "$device.name",
+            0
+          ]
+        }
+      }
+    },
+    {
+      "$bucketAuto": {
+        "groupBy": "$_id.device",
+        "buckets": 1,
+        "output": {
+          "var": {
+            "$push": {
+              "name": "$_id.date",
+              "value": {
+                "$avg": "$varSeries.value"
+              },
+              "min": {
+                "$min": "$varSeries.value"
+              },
+              "max": {
+                "$max": "$varSeries.value"
+              }
+            }
+          },
+          "range": {
+            "$first": "$range"
+          }
+        }
+      }
+    },
+    {
+      "$set": {
+        "param": "@urlParam.var@"
+      }
+    }
+  ]
 }
