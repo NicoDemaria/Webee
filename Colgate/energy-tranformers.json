@@ -1,0 +1,264 @@
+{
+    "aggregate": [
+        {
+            "$match": {
+                "deviceId": {
+                    "$in": [
+                        {
+                            "$oid": "61a7d2fc675db90011e8be28"
+                        },
+                        {
+                            "$oid": "61a8d3fa6317640011a2f23e"
+                        },
+                        {
+                            "$oid": "61a7d31793950f0012eb1261"
+                        },
+                        {
+                            "$oid": "619f71f28dd0c50013eee912"
+                        },
+                        {
+                            "$oid": "619ea6aec8591d00121ae000"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "deviceId": 1,
+                "createdAt": 1,
+                "deviceName": 1,
+                "activePower": {
+                    "$ifNull": [
+                        {
+                            "$abs": "$Power.ActivePowerTotal"
+                        },
+                        "-"
+                    ]
+                },
+                "powerFactor": {
+                    "$ifNull": [
+                        {
+                            "$abs": "$PowerFactor.PowerFactorTotal"
+                        },
+                        "-"
+                    ]
+                },
+                "energy": {
+                    "$ifNull": [
+                        {
+                            "$abs": "$Energy.ReactiveEnergyR"
+                        },
+                        "-"
+                    ]
+                },
+                "ApparentEnergy": {
+                    "$ifNull": [
+                        {
+                            "$abs": "$Energy.ApparentEnergyR"
+                        },
+                        "-"
+                    ]
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": "$deviceId",
+                "deviceName": {
+                    "$first": "$deviceName"
+                },
+                "firstDate": {
+                    "$last": "$createdAt"
+                },
+                "lastDate": {
+                    "$first": "$createdAt"
+                },
+                "activePower": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$activePower",
+                                    "-"
+                                ]
+                            },
+                            "then": "$activePower",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "powerFactor": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$powerFactor",
+                                    "-"
+                                ]
+                            },
+                            "then": "$powerFactor",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "energy": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$energy",
+                                    "-"
+                                ]
+                            },
+                            "then": "$energy",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "ApparentEnergy": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$ApparentEnergy",
+                                    "-"
+                                ]
+                            },
+                            "then": "$ApparentEnergy",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "energyCurrentMonth": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$and": [
+                                    {
+                                        "$ne": [
+                                            "$energy",
+                                            "-"
+                                        ]
+                                    },
+                                    {
+                                        "$gte": [
+                                            "$createdAt",
+                                            {
+                                                "$dateFromParts": {
+                                                    "year": {
+                                                        "$year": "$$NOW"
+                                                    },
+                                                    "month": {
+                                                        "$month": "$$NOW"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": "$energy",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "energyPreviousMonth": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$and": [
+                                    {
+                                        "$ne": [
+                                            "$energy",
+                                            "-"
+                                        ]
+                                    },
+                                    {
+                                        "$lte": [
+                                            "$createdAt",
+                                            {
+                                                "$dateFromParts": {
+                                                    "year": {
+                                                        "$year": "$$NOW"
+                                                    },
+                                                    "month": {
+                                                        "$month": "$$NOW"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "$gte": [
+                                            "$createdAt",
+                                            {
+                                                "$dateFromParts": {
+                                                    "year": {
+                                                        "$year": "$$NOW"
+                                                    },
+                                                    "month": {
+                                                        "$subtract": [
+                                                            {
+                                                                "$month": "$$NOW"
+                                                            },
+                                                            1
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": "$energy",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "firstDate": 1,
+                "lastDate": 1,
+                "deviceName": 1,
+                "activePower": {
+                    "$last": "$activePower"
+                },
+                "energy": {
+                    "$last": "$ApparentEnergy"
+                },
+                "powerFactor": {
+                    "$last": "$powerFactor"
+                },
+                "energyCurrentMonth": {
+                    "$abs": {
+                        "$subtract": [
+                            {
+                                "$last": "$energyCurrentMonth"
+                            },
+                            {
+                                "$first": "$energyCurrentMonth"
+                            }
+                        ]
+                    }
+                },
+                "energyPreviousMonth": {
+                    "$abs": {
+                        "$subtract": [
+                            {
+                                "$last": "$energyPreviousMonth"
+                            },
+                            {
+                                "$first": "$energyPreviousMonth"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}
