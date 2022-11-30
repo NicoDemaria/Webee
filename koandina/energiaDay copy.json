@@ -1,0 +1,198 @@
+{
+    "aggregate": [
+        {
+            "$match": {
+                "deviceId": {
+                    "$in": [
+                        {
+                            "$oid": "633c97fd1af2200011b9d944"
+                        },
+                        {
+                            "$oid": "633c97ea546bf400124316d5"
+                        },
+                        {
+                            "$oid": "633c92acdb13990011ced6ff"
+                        },
+                        {
+                            "$oid": "633c92d101860200115d9dff"
+                        },
+                        {
+                            "$oid": "633c921a1751e90011535c42"
+                        },
+                        {
+                            "$oid": "633c920401860200115d9dd6"
+                        },
+                        {
+                            "$oid": "633c970901860200115d9f30"
+                        },
+                        {
+                            "$oid": "633c977cb11c2f001181a468"
+                        },
+                        {
+                            "$oid": "633c96be1af2200011b9d8df"
+                        },
+                        {
+                            "$oid": "633c9c47db13990011ced930"
+                        },
+                        {
+                            "$oid": "633c9666b11c2f001181a429"
+                        },
+                        {
+                            "$oid": "633c96e81fd3a9001145ecdd"
+                        },
+                        {
+                            "$oid": "633c9682546bf40012431639"
+                        },
+                        {
+                            "$oid": "633c969501860200115d9ee2"
+                        },
+                        {
+                            "$oid": "633c96a801860200115d9eeb"
+                        },
+                        {
+                            "$oid": "633c972d1fd3a9001145eced"
+                        },
+                        {
+                            "$oid": "633c97583b3f1800121b90d7"
+                        },
+                        {
+                            "$oid": "633c977cb11c2f001181a468"
+                        },
+                        {
+                            "$oid": "633c97921af2200011b9d92e"
+                        },
+                        {
+                            "$oid": "633c97a141b73f0011c3a776"
+                        },
+                        {
+                            "$oid": "633c97b041b73f0011c3a781"
+                        },
+                        {
+                            "$oid": "633c97be41b73f0011c3a79b"
+                        },
+                        {
+                            "$oid": "633c93361af2200011b9d7ca"
+                        },
+                        {
+                            "$oid": "633b559b9221de0011cb5608"
+                        },
+                        {
+                            "$oid": "633c931808fb5b0011117f92"
+                        },
+                        {
+                            "$oid": "633c938e3b3f1800121b8f32"
+                        },
+                        {
+                            "$oid": "633c93d708fb5b0011117faa"
+                        },
+                        {
+                            "$oid": "633c943601860200115d9e5c"
+                        },
+                        {
+                            "$oid": "633c94521751e90011535cdb"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "deviceName": 1,
+                "deviceId": 1,
+                "createdAt": 1,
+                "energy": {
+                    "$ifNull": [
+                        "$Real_Energy_Consumption",
+                        {
+                            "$ifNull": [
+                                "$Energy.ActiveEnergyDRres",
+                                "-"
+                            ]
+                        }
+                    ]
+                },
+                "powerFactor": {
+                    "$ifNull": [
+                        "$Power_Factor_Total",
+                        "-"
+                    ]
+                },
+                "activePower": {
+                    "$ifNull": [
+                        "$Real_Power_Total",
+                        "-"
+                    ]
+                },
+                "timezone": {
+                    "$dateFromParts": {
+                        "year": {
+                            "$year": "$createdAt"
+                        },
+                        "month": {
+                            "$month": "$createdAt"
+                        },
+                        "day": {
+                            "$dayOfMonth": "$createdAt"
+                        },
+                        "hour": {
+                            "$hour": "$createdAt"
+                        },
+                        "timezone": "-0300"
+                    }
+                }
+            }
+        },
+        {
+            "$facet": {
+                "currDay": [
+                    {
+                        "$sort": {
+                            "createdAt": -1
+                        }
+                    },
+                    {
+                        "$group": {
+                            "_id": {
+                                "deviceId": "$deviceId",
+                                "date": {
+                                    "$dateFromParts": {
+                                        "year": {
+                                            "$year": "$timezone"
+                                        },
+                                        "month": {
+                                            "$month": "$timezone"
+                                        },
+                                        "day": {
+                                            "$dayOfMonth": "$timezone"
+                                        }
+                                    }
+                                }
+                            },
+                            "energy": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$energy",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$energy"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "deviceName": {
+                                "$first": "$deviceName"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
