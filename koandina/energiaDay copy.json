@@ -1,96 +1,35 @@
 {
     "aggregate": [
         {
+            "$addFields": {
+                "devicesParam": {
+                    "$map": {
+                        "input": {
+                            "$split": [
+                                "633c931808fb5b0011117f92,633b559b9221de0011cb5608,633c938e3b3f1800121b8f32,633c93d708fb5b0011117faa,633c93361af2200011b9d7ca",
+                                ","
+                            ]
+                        },
+                        "as": "var",
+                        "in": {
+                            "$convert": {
+                                "input": "$$var",
+                                "to": "objectId",
+                                "onError": "-"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
             "$match": {
-                "deviceId": {
+                "$expr": {
                     "$in": [
                         {
-                            "$oid": "633c97fd1af2200011b9d944"
+                            "$toObjectId": "$deviceId"
                         },
-                        {
-                            "$oid": "633c97ea546bf400124316d5"
-                        },
-                        {
-                            "$oid": "633c92acdb13990011ced6ff"
-                        },
-                        {
-                            "$oid": "633c92d101860200115d9dff"
-                        },
-                        {
-                            "$oid": "633c921a1751e90011535c42"
-                        },
-                        {
-                            "$oid": "633c920401860200115d9dd6"
-                        },
-                        {
-                            "$oid": "633c970901860200115d9f30"
-                        },
-                        {
-                            "$oid": "633c977cb11c2f001181a468"
-                        },
-                        {
-                            "$oid": "633c96be1af2200011b9d8df"
-                        },
-                        {
-                            "$oid": "633c9c47db13990011ced930"
-                        },
-                        {
-                            "$oid": "633c9666b11c2f001181a429"
-                        },
-                        {
-                            "$oid": "633c96e81fd3a9001145ecdd"
-                        },
-                        {
-                            "$oid": "633c9682546bf40012431639"
-                        },
-                        {
-                            "$oid": "633c969501860200115d9ee2"
-                        },
-                        {
-                            "$oid": "633c96a801860200115d9eeb"
-                        },
-                        {
-                            "$oid": "633c972d1fd3a9001145eced"
-                        },
-                        {
-                            "$oid": "633c97583b3f1800121b90d7"
-                        },
-                        {
-                            "$oid": "633c977cb11c2f001181a468"
-                        },
-                        {
-                            "$oid": "633c97921af2200011b9d92e"
-                        },
-                        {
-                            "$oid": "633c97a141b73f0011c3a776"
-                        },
-                        {
-                            "$oid": "633c97b041b73f0011c3a781"
-                        },
-                        {
-                            "$oid": "633c97be41b73f0011c3a79b"
-                        },
-                        {
-                            "$oid": "633c93361af2200011b9d7ca"
-                        },
-                        {
-                            "$oid": "633b559b9221de0011cb5608"
-                        },
-                        {
-                            "$oid": "633c931808fb5b0011117f92"
-                        },
-                        {
-                            "$oid": "633c938e3b3f1800121b8f32"
-                        },
-                        {
-                            "$oid": "633c93d708fb5b0011117faa"
-                        },
-                        {
-                            "$oid": "633c943601860200115d9e5c"
-                        },
-                        {
-                            "$oid": "633c94521751e90011535cdb"
-                        }
+                        "$devicesParam"
                     ]
                 }
             }
@@ -98,100 +37,420 @@
         {
             "$project": {
                 "_id": 0,
-                "deviceName": 1,
                 "deviceId": 1,
+                "deviceName": 1,
                 "createdAt": 1,
-                "energy": {
+                "currentT": {
                     "$ifNull": [
-                        "$Real_Energy_Consumption",
                         {
                             "$ifNull": [
-                                "$Energy.ActiveEnergyDRres",
-                                "-"
+                                {
+                                    "$divide": [
+                                        {
+                                            "$multiply": [
+                                                "$Current_T",
+                                                1
+                                            ]
+                                        },
+                                        1000
+                                    ]
+                                },
+                                {
+                                    "$divide": [
+                                        {
+                                            "$multiply": [
+                                                "$currentT",
+                                                1
+                                            ]
+                                        },
+                                        1000
+                                    ]
+                                }
                             ]
+                        },
+                        "-"
+                    ]
+                },
+                "currentR": {
+                    "$ifNull": [
+                        {
+                            "$ifNull": [
+                                {
+                                    "$divide": [
+                                        {
+                                            "$multiply": [
+                                                "$Current_R",
+                                                1
+                                            ]
+                                        },
+                                        1000
+                                    ]
+                                },
+                                {
+                                    "$divide": [
+                                        {
+                                            "$multiply": [
+                                                "$currentR",
+                                                1
+                                            ]
+                                        },
+                                        1000
+                                    ]
+                                }
+                            ]
+                        },
+                        "-"
+                    ]
+                },
+                "currentS": {
+                    "$ifNull": [
+                        {
+                            "$ifNull": [
+                                {
+                                    "$divide": [
+                                        {
+                                            "$multiply": [
+                                                "$Current_S",
+                                                1
+                                            ]
+                                        },
+                                        1000
+                                    ]
+                                },
+                                {
+                                    "$divide": [
+                                        {
+                                            "$multiply": [
+                                                "$currentS",
+                                                1
+                                            ]
+                                        },
+                                        1000
+                                    ]
+                                }
+                            ]
+                        },
+                        "-"
+                    ]
+                }
+            }
+        },
+        {
+            "$sort": {
+                "createdAt": 1
+            }
+        },
+        {
+            "$group": {
+                "_id": "$deviceId",
+                "device": {
+                    "$first": "$deviceName"
+                },
+                "firstDate": {
+                    "$first": "$createdAt"
+                },
+                "lastDate": {
+                    "$last": "$createdAt"
+                },
+                "serie": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$currentT",
+                                    "-"
+                                ]
+                            },
+                            "then": {
+                                "value": "$currentS",
+                                "name": {
+                                    "$toDate": "$createdAt"
+                                }
+                            },
+                            "else": "$$REMOVE"
                         }
-                    ]
-                },
-                "powerFactor": {
-                    "$ifNull": [
-                        "$Power_Factor_Total",
-                        "-"
-                    ]
-                },
-                "activePower": {
-                    "$ifNull": [
-                        "$Real_Power_Total",
-                        "-"
-                    ]
-                },
-                "timezone": {
-                    "$dateFromParts": {
-                        "year": {
-                            "$year": "$createdAt"
-                        },
-                        "month": {
-                            "$month": "$createdAt"
-                        },
-                        "day": {
-                            "$dayOfMonth": "$createdAt"
-                        },
-                        "hour": {
-                            "$hour": "$createdAt"
-                        },
-                        "timezone": "-0300"
                     }
                 }
             }
         },
         {
-            "$facet": {
-                "currDay": [
-                    {
-                        "$sort": {
-                            "createdAt": -1
-                        }
-                    },
-                    {
-                        "$group": {
-                            "_id": {
-                                "deviceId": "$deviceId",
-                                "date": {
-                                    "$dateFromParts": {
-                                        "year": {
-                                            "$year": "$timezone"
-                                        },
-                                        "month": {
-                                            "$month": "$timezone"
-                                        },
-                                        "day": {
-                                            "$dayOfMonth": "$timezone"
+            "$addFields": {
+                "hoursCounter": {
+                    "$reduce": {
+                        "input": "$serie",
+                        "initialValue": {
+                            "status": {
+                                "on1": {
+                                    "acum": 0,
+                                    "sum": 0
+                                },
+                                "on2": {
+                                    "acum": 0,
+                                    "sum": 0
+                                },
+                                "on3": {
+                                    "acum": 0,
+                                    "sum": 0
+                                },
+                                "on4": {
+                                    "acum": 0,
+                                    "sum": 0
+                                },
+                                "on5": {
+                                    "acum": 0,
+                                    "sum": 0
+                                }
+                            },
+                            "initialDate": {
+                                "$first": "$serie.name"
+                            },
+                            "totaltime": 0,
+                            "totalvalues": 0,
+                            "integratedValue": 0
+                        },
+                        "in": {
+                            "status": {
+                                "$mergeObjects": [
+                                    "$$value.status",
+                                    {
+                                        "$switch": {
+                                            "branches": [
+                                                {
+                                                    "case": {
+                                                        "$and": [
+                                                            {
+                                                                "$gte": [
+                                                                    "$$this.value",
+                                                                    0.035
+                                                                ]
+                                                            },
+                                                            {
+                                                                "$lt": [
+                                                                    "$$this.value",
+                                                                    0.065
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "then": {
+                                                        "on1": {
+                                                            "sum": {
+                                                                "$add": [
+                                                                    "$$value.status.on1.sum",
+                                                                    "$$this.value"
+                                                                ]
+                                                            },
+                                                            "acum": {
+                                                                "$add": [
+                                                                    "$$value.status.on1.acum",
+                                                                    {
+                                                                        "$subtract": [
+                                                                            "$$this.name",
+                                                                            "$$value.initialDate"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "case": {
+                                                        "$and": [
+                                                            {
+                                                                "$gte": [
+                                                                    "$$this.value",
+                                                                    0.065
+                                                                ]
+                                                            },
+                                                            {
+                                                                "$lt": [
+                                                                    "$$this.value",
+                                                                    0.08
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "then": {
+                                                        "on2": {
+                                                            "sum": {
+                                                                "$add": [
+                                                                    "$$value.status.on2.sum",
+                                                                    "$$this.value"
+                                                                ]
+                                                            },
+                                                            "acum": {
+                                                                "$add": [
+                                                                    "$$value.status.on2.acum",
+                                                                    {
+                                                                        "$subtract": [
+                                                                            "$$this.name",
+                                                                            "$$value.initialDate"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "case": {
+                                                        "$and": [
+                                                            {
+                                                                "$gte": [
+                                                                    "$$this.value",
+                                                                    0.08
+                                                                ]
+                                                            },
+                                                            {
+                                                                "$lt": [
+                                                                    "$$this.value",
+                                                                    0.1
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "then": {
+                                                        "on3": {
+                                                            "sum": {
+                                                                "$add": [
+                                                                    "$$value.status.on3.sum",
+                                                                    "$$this.value"
+                                                                ]
+                                                            },
+                                                            "acum": {
+                                                                "$add": [
+                                                                    "$$value.status.on3.acum",
+                                                                    {
+                                                                        "$subtract": [
+                                                                            "$$this.name",
+                                                                            "$$value.initialDate"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "case": {
+                                                        "$and": [
+                                                            {
+                                                                "$gte": [
+                                                                    "$$this.value",
+                                                                    0.1
+                                                                ]
+                                                            },
+                                                            {
+                                                                "$lt": [
+                                                                    "$$this.value",
+                                                                    0.3
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "then": {
+                                                        "on4": {
+                                                            "sum": {
+                                                                "$add": [
+                                                                    "$$value.status.on4.sum",
+                                                                    "$$this.value"
+                                                                ]
+                                                            },
+                                                            "acum": {
+                                                                "$add": [
+                                                                    "$$value.status.on4.acum",
+                                                                    {
+                                                                        "$subtract": [
+                                                                            "$$this.name",
+                                                                            "$$value.initialDate"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "case": {
+                                                        "$gte": [
+                                                            "$$this.value",
+                                                            0.3
+                                                        ]
+                                                    },
+                                                    "then": {
+                                                        "on5": {
+                                                            "sum": {
+                                                                "$add": [
+                                                                    "$$value.status.on5.sum",
+                                                                    "$$this.value"
+                                                                ]
+                                                            },
+                                                            "acum": {
+                                                                "$add": [
+                                                                    "$$value.status.on5.acum",
+                                                                    {
+                                                                        "$subtract": [
+                                                                            "$$this.name",
+                                                                            "$$value.initialDate"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "default": "$$value.status"
                                         }
                                     }
-                                }
+                                ]
                             },
-                            "energy": {
-                                "$push": {
-                                    "$cond": {
-                                        "if": {
-                                            "$ne": [
-                                                "$energy",
-                                                "-"
-                                            ]
-                                        },
-                                        "then": {
-                                            "name": "$createdAt",
-                                            "value": "$energy"
-                                        },
-                                        "else": "$$REMOVE"
+                            "initialDate": "$$this.name",
+                            "totalvalues": {
+                                "$add": [
+                                    "$$value.totalvalues",
+                                    "$$this.value"
+                                ]
+                            },
+                            "totaltime": {
+                                "$add": [
+                                    "$$value.totaltime",
+                                    {
+                                        "$subtract": [
+                                            "$$this.name",
+                                            "$$value.initialDate"
+                                        ]
                                     }
-                                }
+                                ]
                             },
-                            "deviceName": {
-                                "$first": "$deviceName"
+                            "integratedValue": {
+                                "$add": [
+                                    "$$value.integratedValue",
+                                    {
+                                        "$multiply": [
+                                            "$$this.value",
+                                            {
+                                                "$subtract": [
+                                                    "$$this.name",
+                                                    "$$value.initialDate"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
                         }
                     }
-                ]
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "hoursCounter": 1,
+                "firstDate": 1,
+                "lastDate": 1
             }
         }
     ]
