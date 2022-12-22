@@ -1,0 +1,1294 @@
+{
+    "aggregate": [
+        {
+            "$match": {
+                "deviceId": {
+                    "$in": [
+                        {
+                            "$oid": "6142048a3b9e9d001893adc0"
+                        },
+                        {
+                            "$oid": "614205233b9e9d001893add0"
+                        },
+                        {
+                            "$oid": "6142056d986a0900188f063d"
+                        },
+                        {
+                            "$oid": "61420c32cc691e0018cb65d1"
+                        },
+                        {
+                            "$oid": "61dd895641d8c000112fa77f"
+                        },
+                        {
+                            "$oid": "61dd885c6717cf00117ff41d"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "deviceId": 1,
+                "deviceName": 1,
+                "createdAt": 1,
+                "mappedValue": {
+                    "$ifNull": [
+                        "$mappedValue",
+                        "-"
+                    ]
+                },
+                "temperatureC": {
+                    "$ifNull": [
+                        "$temperatureC",
+                        "-"
+                    ]
+                },
+                "temperature2C": {
+                    "$ifNull": [
+                        "$temperature2C",
+                        "-"
+                    ]
+                },
+                "fineCurrent": {
+                    "$ifNull": [
+                        "$fineCurrent",
+                        "-"
+                    ]
+                }
+            }
+        },
+        {
+            "$sort": {
+                "createdAt": 1
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "date": {
+                        "$dateFromParts": {
+                            "year": {
+                                "$year": "$createdAt"
+                            },
+                            "month": {
+                                "$month": "$createdAt"
+                            },
+                            "day": {
+                                "$dayOfMonth": "$createdAt"
+                            },
+                            "hour": {
+                                "$hour": "$createdAt"
+                            },
+                            "minute": {
+                                "$subtract": [
+                                    {
+                                        "$minute": "$createdAt"
+                                    },
+                                    {
+                                        "$mod": [
+                                            {
+                                                "$minute": "$createdAt"
+                                            },
+                                            8
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "presion_de_caldera": {
+                    "$avg": {
+                        "$cond": {
+                            "if": {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$deviceName",
+                                            "Presiondecaldera"
+                                        ]
+                                    },
+                                    {
+                                        "$ne": [
+                                            "$mappedValue",
+                                            "-"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": "$mappedValue",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "temp_gases_escape_antes_eco": {
+                    "$avg": {
+                        "$cond": {
+                            "if": {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$deviceName",
+                                            "TempantesdeECO"
+                                        ]
+                                    },
+                                    {
+                                        "$ne": [
+                                            "$mappedValue",
+                                            "-"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": "$mappedValue",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "estado_carga_quemador_medido": {
+                    "$avg": {
+                        "$cond": {
+                            "if": {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$deviceName",
+                                            "Estadodecargadelquemador"
+                                        ]
+                                    },
+                                    {
+                                        "$ne": [
+                                            "$mappedValue",
+                                            "-"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": "$mappedValue",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "control_oxigeno": {
+                    "$avg": {
+                        "$cond": {
+                            "if": {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$deviceName",
+                                            "Niveloxigeno"
+                                        ]
+                                    },
+                                    {
+                                        "$ne": [
+                                            "$mappedValue",
+                                            "-"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": "$mappedValue",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "temp_agua_alimen": {
+                    "$avg": {
+                        "$cond": {
+                            "if": {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$deviceName",
+                                            "Temperaturaagua"
+                                        ]
+                                    },
+                                    {
+                                        "$ne": [
+                                            "$temperatureC",
+                                            "-"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": "$temperatureC",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "temp_aire_in_quemador": {
+                    "$avg": {
+                        "$cond": {
+                            "if": {
+                                "$and": [
+                                    {
+                                        "$eq": [
+                                            "$deviceName",
+                                            "Temperaturaaire"
+                                        ]
+                                    },
+                                    {
+                                        "$ne": [
+                                            "$temperature2C",
+                                            "-"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "then": "$temperature2C",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "presion_de_caldera": {
+                    "$ifNull": [
+                        "$presion_de_caldera",
+                        "-"
+                    ]
+                },
+                "temp_gases_escape_antes_eco": {
+                    "$ifNull": [
+                        "$temp_gases_escape_antes_eco",
+                        "-"
+                    ]
+                },
+                "estado_carga_quemador_medido": {
+                    "$ifNull": [
+                        "$estado_carga_quemador_medido",
+                        "-"
+                    ]
+                },
+                "control_oxigeno": {
+                    "$ifNull": [
+                        "$control_oxigeno",
+                        "-"
+                    ]
+                },
+                "temp_agua_alimen": {
+                    "$ifNull": [
+                        "$temp_agua_alimen",
+                        "-"
+                    ]
+                },
+                "temp_aire_in_quemador": {
+                    "$ifNull": [
+                        "$temp_aire_in_quemador",
+                        "-"
+                    ]
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "entalpia": {
+                    "$sum": [
+                        {
+                            "$multiply": [
+                                -0.0054,
+                                {
+                                    "$pow": [
+                                        {
+                                            "$avg": "$presion_de_caldera"
+                                        },
+                                        4
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "$multiply": [
+                                0.1447,
+                                {
+                                    "$pow": [
+                                        {
+                                            "$avg": "$presion_de_caldera"
+                                        },
+                                        3
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "$multiply": [
+                                -1.4828,
+                                {
+                                    "$pow": [
+                                        {
+                                            "$avg": "$presion_de_caldera"
+                                        },
+                                        2
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "$multiply": [
+                                8.2826,
+                                {
+                                    "$avg": "$presion_de_caldera"
+                                }
+                            ]
+                        },
+                        639.5
+                    ]
+                },
+                "temp_gases_escape": {
+                    "$ifNull": [
+                        "$temp_gases_escape_antes_eco",
+                        "-"
+                    ]
+                },
+                "temp_aire_combustion": {
+                    "$ifNull": [
+                        "$temp_aire_in_quemador",
+                        "-"
+                    ]
+                },
+                "porcent_oxigeno": {
+                    "$ifNull": [
+                        "$control_oxigeno",
+                        "-"
+                    ]
+                },
+                "estado_carga_quemador_calculado": {
+                    "$ifNull": [
+                        {
+                            "$sum": [
+                                {
+                                    "$multiply": [
+                                        7.98,
+                                        {
+                                            "$divide": [
+                                                {
+                                                    "$avg": "$estado_carga_quemador_medido"
+                                                },
+                                                100
+                                            ]
+                                        },
+                                        100
+                                    ]
+                                },
+                                200
+                            ]
+                        },
+                        "-"
+                    ]
+                },
+                "factor_com_A2": 0.65,
+                "factor_com_B": 0.009,
+                "perdidas_rad": 1,
+                "perdidas_purgas": 4,
+                "poder_cal_gnat": 8450,
+                "factor_emision": 1.778,
+                "factor_em_calculado": 1.778
+            }
+        },
+        {
+            "$addFields": {
+                "caudal_gas_quemado": {
+                    "$sum": [
+                        {
+                            "$multiply": [
+                                -0.0003,
+                                {
+                                    "$pow": [
+                                        {
+                                            "$avg": "$estado_carga_quemador_calculado"
+                                        },
+                                        2
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "$multiply": [
+                                0.7351,
+                                {
+                                    "$avg": "$estado_carga_quemador_calculado"
+                                }
+                            ]
+                        },
+                        -6.5584
+                    ]
+                },
+                "diferencia_entalpia": {
+                    "$subtract": [
+                        {
+                            "$avg": "$entalpia"
+                        },
+                        {
+                            "$avg": "$temp_agua_alimen"
+                        }
+                    ]
+                },
+                "perdidas_gases_escombustion": {
+                    "$multiply": [
+                        {
+                            "$subtract": [
+                                {
+                                    "$avg": "$temp_gases_escape"
+                                },
+                                {
+                                    "$avg": "$temp_aire_combustion"
+                                }
+                            ]
+                        },
+                        {
+                            "$divide": [
+                                {
+                                    "$avg": "$factor_com_A2"
+                                },
+                                {
+                                    "$sum": [
+                                        {
+                                            "$subtract": [
+                                                21,
+                                                {
+                                                    "$avg": "$porcent_oxigeno"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "$avg": "$factor_com_B"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "rendimiento_caldera": {
+                    "$subtract": [
+                        100,
+                        {
+                            "$sum": [
+                                {
+                                    "$avg": "$perdidas_gases_escombustion"
+                                },
+                                {
+                                    "$avg": "$perdidas_purgas"
+                                },
+                                {
+                                    "$avg": "$perdidas_rad"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "emision_co2": {
+                    "$multiply": [
+                        {
+                            "$avg": "$factor_emision"
+                        },
+                        {
+                            "$divide": [
+                                {
+                                    "$avg": "$caudal_gas_quemado"
+                                },
+                                1000
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "generacion_vapor": {
+                    "$ifNull": [
+                        {
+                            "$multiply": [
+                                "$caudal_gas_quemado",
+                                {
+                                    "$divide": [
+                                        "$rendimiento_caldera",
+                                        100000
+                                    ]
+                                },
+                                {
+                                    "$divide": [
+                                        "$poder_cal_gnat",
+                                        "$diferencia_entalpia"
+                                    ]
+                                }
+                            ]
+                        },
+                        "-"
+                    ]
+                },
+                "presion_de_caldera": {
+                    "$ifNull": [
+                        "$presion_de_caldera",
+                        "-"
+                    ]
+                },
+                "temp_gases_escape_antes_eco": {
+                    "$ifNull": [
+                        "$temp_gases_escape_antes_eco",
+                        "-"
+                    ]
+                },
+                "estado_carga_quemador_calculado": {
+                    "$ifNull": [
+                        "$estado_carga_quemador_calculado",
+                        "-"
+                    ]
+                },
+                "estado_carga_quemador_medido": {
+                    "$ifNull": [
+                        "$estado_carga_quemador_medido",
+                        "-"
+                    ]
+                },
+                "control_oxigeno": {
+                    "$ifNull": [
+                        "$control_oxigeno",
+                        "-"
+                    ]
+                },
+                "temp_agua_alimen": {
+                    "$ifNull": [
+                        "$temp_agua_alimen",
+                        "-"
+                    ]
+                },
+                "temp_aire_in_quemador": {
+                    "$ifNull": [
+                        "$temp_aire_in_quemador",
+                        "-"
+                    ]
+                },
+                "entalpia": {
+                    "$ifNull": [
+                        "$entalpia",
+                        "-"
+                    ]
+                },
+                "temp_gases_escape": {
+                    "$ifNull": [
+                        "$temp_gases_escape",
+                        "-"
+                    ]
+                },
+                "temp_aire_combustion": {
+                    "$ifNull": [
+                        "$temp_aire_combustion",
+                        "-"
+                    ]
+                },
+                "porcent_oxigeno": {
+                    "$ifNull": [
+                        "$porcent_oxigeno",
+                        "-"
+                    ]
+                },
+                "caudal_gas_quemado": {
+                    "$ifNull": [
+                        "$caudal_gas_quemado",
+                        "-"
+                    ]
+                },
+                "factor_com_A2": {
+                    "$ifNull": [
+                        "$factor_com_A2",
+                        "-"
+                    ]
+                },
+                "factor_com_B": {
+                    "$ifNull": [
+                        "$factor_com_B",
+                        "-"
+                    ]
+                },
+                "perdidas_rad": {
+                    "$ifNull": [
+                        "$perdidas_rad",
+                        "-"
+                    ]
+                },
+                "perdidas_purgas": {
+                    "$ifNull": [
+                        "$perdidas_purgas",
+                        "-"
+                    ]
+                },
+                "poder_cal_gnat": {
+                    "$ifNull": [
+                        "$poder_cal_gnat",
+                        "-"
+                    ]
+                },
+                "factor_emision": {
+                    "$ifNull": [
+                        "$factor_emision",
+                        "-"
+                    ]
+                },
+                "factor_em_calculado": {
+                    "$ifNull": [
+                        "$factor_em_calculado",
+                        "-"
+                    ]
+                },
+                "diferencia_entalpia": {
+                    "$ifNull": [
+                        "$diferencia_entalpia",
+                        "-"
+                    ]
+                },
+                "perdidas_gases_escombustion": {
+                    "$ifNull": [
+                        "$perdidas_gases_escombustion",
+                        "-"
+                    ]
+                },
+                "rendimiento_caldera": {
+                    "$ifNull": [
+                        "$rendimiento_caldera",
+                        "-"
+                    ]
+                },
+                "emision_co2": {
+                    "$ifNull": [
+                        "$emision_co2",
+                        "-"
+                    ]
+                }
+            }
+        },
+        {
+            "$sort": {
+                "_id.date": -1
+            }
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "generacion_vapor": {
+                    "$cond": {
+                        "if": {
+                            "$or": [
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$porcent_oxigeno"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$generacion_vapor"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$caudal_gas_quemado"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$rendimiento_caldera"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$estado_carga_quemador_calculado"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$temp_gases_escape"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$perdidas_gases_escombustion"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$temp_aire_combustion"
+                                    ]
+                                }
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$generacion_vapor",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "presion_de_caldera": {
+                    "$cond": {
+                        "if": {
+                            "$or": [
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$presion_de_caldera"
+                                    ]
+                                }
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$presion_de_caldera",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "temp_gases_escape_antes_eco": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$temp_gases_escape_antes_eco"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$temp_gases_escape_antes_eco",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "estado_carga_quemador_calculado": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$estado_carga_quemador_medido"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$estado_carga_quemador_calculado",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "estado_carga_quemador_medido": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$estado_carga_quemador_medido"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$estado_carga_quemador_medido",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "control_oxigeno": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$control_oxigeno"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$control_oxigeno",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "temp_agua_alimen": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$temp_agua_alimen"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$temp_agua_alimen",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "temp_aire_in_quemador": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$temp_aire_in_quemador"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$temp_aire_in_quemador",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "entalpia": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$entalpia"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$entalpia",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "temp_gases_escape": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$temp_gases_escape"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$temp_gases_escape",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "temp_aire_combustion": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$temp_aire_combustion"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$temp_aire_combustion",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "porcent_oxigeno": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$porcent_oxigeno"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$porcent_oxigeno",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "caudal_gas_quemado": {
+                    "$cond": {
+                        "if": {
+                            "$or": [
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$caudal_gas_quemado"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$estado_carga_quemador_calculado"
+                                    ]
+                                }
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$caudal_gas_quemado",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "perdidas_rad": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$perdidas_rad"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$perdidas_rad",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "perdidas_purgas": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$perdidas_purgas"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$perdidas_purgas",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "factor_emision": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$factor_emision"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$factor_emision",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "diferencia_entalpia": {
+                    "$cond": {
+                        "if": {
+                            "$or": [
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$temp_agua_alimen"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$diferencia_entalpia"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$entalpia"
+                                    ]
+                                }
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$diferencia_entalpia",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "perdidas_gases_escombustion": {
+                    "$cond": {
+                        "if": {
+                            "$or": [
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$porcent_oxigeno"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$temp_gases_escape"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$perdidas_gases_escombustion"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$temp_aire_combustion"
+                                    ]
+                                }
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$perdidas_gases_escombustion",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "rendimiento_caldera": {
+                    "$cond": {
+                        "if": {
+                            "$or": [
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$porcent_oxigeno"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$temp_gases_escape"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$temp_aire_combustion"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$rendimiento_caldera"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        "-",
+                                        "$perdidas_gases_escombustion"
+                                    ]
+                                },
+                                {
+                                    "$eq": [
+                                        null,
+                                        "$perdidas_gases_escombustion"
+                                    ]
+                                }
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$rendimiento_caldera",
+                            "name": "$_id.date"
+                        }
+                    }
+                },
+                "emision_co2": {
+                    "$cond": {
+                        "if": {
+                            "$eq": [
+                                "-",
+                                "$emision_co2"
+                            ]
+                        },
+                        "then": "$$REMOVE",
+                        "else": {
+                            "value": "$emision_co2",
+                            "name": "$_id.date"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$project": {
+                "rendimiento_caldera": {
+                    "$ifNull": [
+                        "$rendimiento_caldera",
+                        "-"
+                    ]
+                },
+                "emision_co2": {
+                    "$ifNull": [
+                        "$emision_co2",
+                        "-"
+                    ]
+                },
+                "generacion_vapor": {
+                    "$ifNull": [
+                        "$generacion_vapor",
+                        "-"
+                    ]
+                },
+                "_id": 1,
+                "deviceId": 1,
+                "deviceName": 1,
+                "createdAt": {
+                    "$ifNull": [
+                        "$generacion_vapor.name",
+                        {
+                            "$ifNull": [
+                                "$emision_co2.name",
+                                {
+                                    "$ifNull": [
+                                        "$rendimiento_caldera.name",
+                                        "-"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "$dateFromParts": {
+                        "year": {
+                            "$year": "$createdAt"
+                        },
+                        "month": {
+                            "$month": "$createdAt"
+                        },
+                        "day": {
+                            "$dayOfMonth": "$createdAt"
+                        },
+                        "hour": {
+                            "$hour": "$createdAt"
+                        }
+                    }
+                },
+                "device": {
+                    "$first": "$deviceId"
+                },
+                "rendimiento_caldera": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$rendimiento_caldera",
+                                    "-"
+                                ]
+                            },
+                            "then": "$rendimiento_caldera",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "emision_co2": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$emision_co2",
+                                    "-"
+                                ]
+                            },
+                            "then": "$emision_co2",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                },
+                "generacion_vapor": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    "$generacion_vapor",
+                                    "-"
+                                ]
+                            },
+                            "then": "$generacion_vapor",
+                            "else": "$$REMOVE"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$sort": {
+                "_id": -1
+            }
+        },
+        {
+            "$match": {
+                "$or": [
+                    {
+                        "rendimiento_caldera.value": {
+                            "$ne": null
+                        }
+                    },
+                    {
+                        "emision_co2.value": {
+                            "$ne": null
+                        }
+                    },
+                    {
+                        "generacion_vapor.value": {
+                            "$ne": null
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "$bucketAuto": {
+                "groupBy": "$device",
+                "buckets": 1,
+                "output": {
+                    "rendimiento_caldera": {
+                        "$push": {
+                            "name": "$_id",
+                            "value": {
+                                "$avg": "$rendimiento_caldera.value"
+                            },
+                            "min": {
+                                "$min": "$rendimiento_caldera.value"
+                            },
+                            "max": {
+                                "$max": "$rendimiento_caldera.value"
+                            }
+                        }
+                    },
+                    "emision_co2": {
+                        "$push": {
+                            "name": "$_id",
+                            "value": {
+                                "$avg": "$emision_co2.value"
+                            },
+                            "min": {
+                                "$min": "$emision_co2.value"
+                            },
+                            "max": {
+                                "$max": "$emision_co2.value"
+                            }
+                        }
+                    },
+                    "generacion_vapor": {
+                        "$push": {
+                            "name": "$_id",
+                            "value": {
+                                "$avg": "$generacion_vapor.value"
+                            },
+                            "min": {
+                                "$min": "$generacion_vapor.value"
+                            },
+                            "max": {
+                                "$max": "$generacion_vapor.value"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
