@@ -1,0 +1,60 @@
+{
+    "aggregate": [
+        {
+            "$match": {
+                "deletedAt": {
+                    "$exists": false
+                }
+            }
+        },
+        {
+            "$project": {
+                "category": {
+                    "$cond": {
+                        "if": {
+                            "$exists": "$collectionName"
+                        },
+                        "then": {
+                            "$switch": {
+                                "branches": [
+                                    {
+                                        "case": {
+                                            "$eq": [
+                                                "$collectionName",
+                                                "automaticAlerts"
+                                            ]
+                                        },
+                                        "then": "Machines"
+                                    },
+                                    {
+                                        "case": {
+                                            "$eq": [
+                                                "$collectionName",
+                                                "facilityAlerts"
+                                            ]
+                                        },
+                                        "then": "Facility"
+                                    },
+                                    {
+                                        "case": {
+                                            "$eq": [
+                                                "$collectionName",
+                                                "servicesAlerts"
+                                            ]
+                                        },
+                                        "then": "Service"
+                                    }
+                                ],
+                                "default": "Energy"
+                            }
+                        },
+                        "else": "Other"
+                    }
+                },
+                "status": 1,
+                "description": 1,
+                "createdAt": 1
+            }
+        }
+    ]
+}
