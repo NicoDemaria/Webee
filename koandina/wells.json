@@ -1,0 +1,998 @@
+{
+    "aggregate": [
+        {
+            "$match": {
+                "$and": [
+                    {
+                        "deviceId": {
+                            "$oid": "630181d6e18822001340d97f"
+                        }
+                    },
+                    {
+                        "createdAt": {
+                            "$gte": {
+                                "$date": "2022-08-23T13:26:19.885Z"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "deviceName": 1,
+                "deviceId": 1,
+                "createdAt": 1,
+                "totalWell3": {
+                    "$ifNull": [
+                        "$Pozo_03_Total",
+                        "-"
+                    ]
+                },
+                "pulseWell3": {
+                    "$ifNull": [
+                        "$Pozo_03_Pulso",
+                        "-"
+                    ]
+                },
+                "totalWell5": {
+                    "$ifNull": [
+                        "$Pozo_05_Total",
+                        "-"
+                    ]
+                },
+                "pulseWell5": {
+                    "$ifNull": [
+                        "$Pozo_05_Pulso",
+                        "-"
+                    ]
+                },
+                "totalWell7": {
+                    "$ifNull": [
+                        "$Pozo_07_Total",
+                        "-"
+                    ]
+                },
+                "pulseWell7": {
+                    "$ifNull": [
+                        "$Pozo_07_Pulso",
+                        "-"
+                    ]
+                },
+                "totalWell8": {
+                    "$ifNull": [
+                        "$Pozo_08_Total",
+                        "-"
+                    ]
+                },
+                "pulseWell8": {
+                    "$ifNull": [
+                        "$Pozo_08_Pulso",
+                        "-"
+                    ]
+                },
+                "totalWell9": {
+                    "$ifNull": [
+                        "$Pozo_09_Total",
+                        "-"
+                    ]
+                },
+                "pulseWell9": {
+                    "$ifNull": [
+                        "$Pozo_09_Pulso",
+                        "-"
+                    ]
+                },
+                "totalWell10": {
+                    "$ifNull": [
+                        "$Pozo_10_Total",
+                        "-"
+                    ]
+                },
+                "pulseWell10": {
+                    "$ifNull": [
+                        "$Pozo_10_Pulso",
+                        "-"
+                    ]
+                },
+                "totalWell11": {
+                    "$ifNull": [
+                        "$Pozo_11_Total",
+                        "-"
+                    ]
+                },
+                "pulseWell11": {
+                    "$ifNull": [
+                        "$Pozo_11_Pulso",
+                        "-"
+                    ]
+                },
+                "totalWell12": {
+                    "$ifNull": [
+                        "$Pozo_12_Total",
+                        "-"
+                    ]
+                },
+                "pulseWell12": {
+                    "$ifNull": [
+                        "$Pozo_12_Pulso",
+                        "-"
+                    ]
+                },
+                "timezone2": {
+                    "$dateToParts": {
+                        "date": "$createdAt",
+                        "timezone": "America/Asuncion"
+                    }
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "timezone": {
+                    "$dateFromParts": {
+                        "year": "$timezone2.year",
+                        "month": "$timezone2.month",
+                        "day": "$timezone2.day",
+                        "hour": "$timezone2.hour",
+                        "minute": "$timezone2.minute"
+                    }
+                }
+            }
+        },
+        {
+            "$sort": {
+                "createdAt": -1
+            }
+        },
+        {
+            "$facet": {
+                "caudalVol": [
+                    {
+                        "$group": {
+                            "_id": {
+                                "deviceId": "$deviceId",
+                                "date": {
+                                    "$dateFromParts": {
+                                        "year": {
+                                            "$year": "$timezone"
+                                        },
+                                        "month": {
+                                            "$month": "$timezone"
+                                        },
+                                        "day": {
+                                            "$dayOfMonth": "$timezone"
+                                        },
+                                        "hour": {
+                                            "$hour": "$timezone"
+                                        }
+                                    }
+                                }
+                            },
+                            "totalWell3": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell3",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell3"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell5": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell5",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell5"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell7": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell7",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell7"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell8": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell8",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell8"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell9": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell9",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell9"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell10": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell10",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell10"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell11": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell11",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell11"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell12": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell12",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell12"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "$set": {
+                            "totalWell3": {
+                                "$subtract": [
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell3.value",
+                                            0
+                                        ]
+                                    },
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell3.value",
+                                            3
+                                        ]
+                                    }
+                                ]
+                            },
+                            "totalWell5": {
+                                "$subtract": [
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell5.value",
+                                            0
+                                        ]
+                                    },
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell5.value",
+                                            3
+                                        ]
+                                    }
+                                ]
+                            },
+                            "totalWell7": {
+                                "$subtract": [
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell7.value",
+                                            0
+                                        ]
+                                    },
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell7.value",
+                                            3
+                                        ]
+                                    }
+                                ]
+                            },
+                            "totalWell8": {
+                                "$subtract": [
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell8.value",
+                                            0
+                                        ]
+                                    },
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell8.value",
+                                            3
+                                        ]
+                                    }
+                                ]
+                            },
+                            "totalWell9": {
+                                "$subtract": [
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell9.value",
+                                            0
+                                        ]
+                                    },
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell9.value",
+                                            3
+                                        ]
+                                    }
+                                ]
+                            },
+                            "totalWell10": {
+                                "$subtract": [
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell10.value",
+                                            0
+                                        ]
+                                    },
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell10.value",
+                                            3
+                                        ]
+                                    }
+                                ]
+                            },
+                            "totalWell11": {
+                                "$subtract": [
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell11.value",
+                                            0
+                                        ]
+                                    },
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell11.value",
+                                            3
+                                        ]
+                                    }
+                                ]
+                            },
+                            "totalWell12": {
+                                "$subtract": [
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell12.value",
+                                            0
+                                        ]
+                                    },
+                                    {
+                                        "$arrayElemAt": [
+                                            "$totalWell12.value",
+                                            3
+                                        ]
+                                    }
+                                ]
+                            },
+                            "fin": {
+                                "$arrayElemAt": [
+                                    "$totalWell3.name",
+                                    0
+                                ]
+                            },
+                            "inicio": {
+                                "$arrayElemAt": [
+                                    "$totalWell3.name",
+                                    3
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$sort": {
+                            "_id.date": -1
+                        }
+                    },
+                    {
+                        "$limit": 1
+                    }
+                ],
+                "currDay": [
+                    {
+                        "$group": {
+                            "_id": {
+                                "$dateFromParts": {
+                                    "year": {
+                                        "$year": "$timezone"
+                                    },
+                                    "month": {
+                                        "$month": "$timezone"
+                                    },
+                                    "day": {
+                                        "$dayOfMonth": "$timezone"
+                                    }
+                                }
+                            },
+                            "totalWell3": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell3",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell3"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "pulseWell3": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$pulseWell3",
+                                                        "-"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$pulseWell3"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell5": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell5",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell5"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "pulseWell5": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$pulseWell5",
+                                                        "-"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$pulseWell5"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell7": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell7",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell7"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "pulseWell7": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$pulseWell7",
+                                                        "-"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$pulseWell7"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell8": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell8",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell8"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "pulseWell8": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$pulseWell8",
+                                                        "-"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$pulseWell8"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell9": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell9",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell9"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "pulseWell9": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$pulseWell9",
+                                                        "-"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$pulseWell9"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell10": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell10",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell10"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "pulseWell10": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$pulseWell10",
+                                                        "-"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$pulseWell10"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell11": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell11",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell11"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "pulseWell11": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$pulseWell11",
+                                                        "-"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$pulseWell11"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "totalWell12": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$ne": [
+                                                "$totalWell12",
+                                                "-"
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$totalWell12"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            },
+                            "pulseWell12": {
+                                "$push": {
+                                    "$cond": {
+                                        "if": {
+                                            "$and": [
+                                                {
+                                                    "$ne": [
+                                                        "$pulseWell12",
+                                                        "-"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "then": {
+                                            "name": "$createdAt",
+                                            "value": "$pulseWell12"
+                                        },
+                                        "else": "$$REMOVE"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "$set": {
+                            "totalWell3": {
+                                "$subtract": [
+                                    {
+                                        "$first": "$totalWell3.value"
+                                    },
+                                    {
+                                        "$last": "$totalWell3.value"
+                                    }
+                                ]
+                            },
+                            "totalWell5": {
+                                "$subtract": [
+                                    {
+                                        "$first": "$totalWell5.value"
+                                    },
+                                    {
+                                        "$last": "$totalWell5.value"
+                                    }
+                                ]
+                            },
+                            "totalWell7": {
+                                "$subtract": [
+                                    {
+                                        "$first": "$totalWell7.value"
+                                    },
+                                    {
+                                        "$last": "$totalWell7.value"
+                                    }
+                                ]
+                            },
+                            "totalWell8": {
+                                "$subtract": [
+                                    {
+                                        "$first": "$totalWell8.value"
+                                    },
+                                    {
+                                        "$last": "$totalWell8.value"
+                                    }
+                                ]
+                            },
+                            "totalWell9": {
+                                "$subtract": [
+                                    {
+                                        "$first": "$totalWell9.value"
+                                    },
+                                    {
+                                        "$last": "$totalWell9.value"
+                                    }
+                                ]
+                            },
+                            "totalWell10": {
+                                "$subtract": [
+                                    {
+                                        "$first": "$totalWell10.value"
+                                    },
+                                    {
+                                        "$last": "$totalWell10.value"
+                                    }
+                                ]
+                            },
+                            "totalWell11": {
+                                "$subtract": [
+                                    {
+                                        "$first": "$totalWell11.value"
+                                    },
+                                    {
+                                        "$last": "$totalWell11.value"
+                                    }
+                                ]
+                            },
+                            "totalWell12": {
+                                "$subtract": [
+                                    {
+                                        "$first": "$totalWell12.value"
+                                    },
+                                    {
+                                        "$last": "$totalWell12.value"
+                                    }
+                                ]
+                            },
+                            "pulseWell3": {
+                                "$first": "$pulseWell3"
+                            },
+                            "pulseWell5": {
+                                "$first": "$pulseWell5"
+                            },
+                            "pulseWell7": {
+                                "$first": "$pulseWell7"
+                            },
+                            "pulseWell8": {
+                                "$first": "$pulseWell8"
+                            },
+                            "pulseWell9": {
+                                "$first": "$pulseWell9"
+                            },
+                            "pulseWell10": {
+                                "$first": "$pulseWell10"
+                            },
+                            "pulseWell11": {
+                                "$first": "$pulseWell11"
+                            },
+                            "pulseWell12": {
+                                "$first": "$pulseWell12"
+                            }
+                        }
+                    }
+                ],
+                "alertTypes": [
+                    {
+                        "$limit": 1
+                    },
+                    {
+                        "$lookup": {
+                            "from": "FormLog",
+                            "let": {},
+                            "pipeline": [
+                                {
+                                    "$match": {
+                                        "$and": [
+                                            {
+                                                "enterpriseId": {
+                                                    "$oid": "619d3a500f578700128c30a1"
+                                                }
+                                            },
+                                            {
+                                                "collectionName": "alertTypes2"
+                                            },
+                                            {
+                                                "deletedAt": {
+                                                    "$exists": false
+                                                }
+                                            },
+                                            {
+                                                "data": {
+                                                    "$exists": true
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "$project": {
+                                        "_id": 0,
+                                        "data": 1
+                                    }
+                                }
+                            ],
+                            "as": "arr"
+                        }
+                    },
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "arr": 1
+                        }
+                    }
+                ],
+                "assets": [
+                    {
+                        "$limit": 1
+                    },
+                    {
+                        "$lookup": {
+                            "from": "FormLog",
+                            "let": {},
+                            "pipeline": [
+                                {
+                                    "$match": {
+                                        "$and": [
+                                            {
+                                                "enterpriseId": {
+                                                    "$oid": "619d3a500f578700128c30a1"
+                                                }
+                                            },
+                                            {
+                                                "collectionName": "waterAssets"
+                                            },
+                                            {
+                                                "deletedAt": {
+                                                    "$exists": false
+                                                }
+                                            },
+                                            {
+                                                "data": {
+                                                    "$exists": true
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "$project": {
+                                        "_id": 0,
+                                        "data": 1
+                                    }
+                                }
+                            ],
+                            "as": "arr"
+                        }
+                    },
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "arr": 1
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
