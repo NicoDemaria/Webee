@@ -1,0 +1,269 @@
+{
+    "aggregate": [
+        {
+            "$match": {
+                "deviceId": {
+                    "$in": [
+                        {
+                            "$oid": "62a9ede9247ebf00112c5a08"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "deviceId": 1,
+                "deviceName": 1,
+                "createdAt": 1,
+                "var": {
+                    "$switch": {
+                        "branches": [
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "outputPH"
+                                    ]
+                                },
+                                "then": "$PH_Salida_TK"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "ph"
+                                    ]
+                                },
+                                "then": "$Input_ph_PID_Clarificacion"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "ph-tk_206"
+                                    ]
+                                },
+                                "then": "$Valor_PH_TK_206"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "cantidadCloro"
+                                    ]
+                                },
+                                "then": "$Cantidad_Cloro_Tk"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "nivelCisterna1"
+                                    ]
+                                },
+                                "then": "$Nivel_TK_1"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "nivelCisterna2"
+                                    ]
+                                },
+                                "then": "$Nivel_TK_2"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "nivelCisterna3"
+                                    ]
+                                },
+                                "then": "$Nivel_TK_3"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "conductividadEntrada"
+                                    ]
+                                },
+                                "then": "$Bloque_de_datos_1_Conductividad_Entrada"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "conductividadSalida"
+                                    ]
+                                },
+                                "then": "$Bloque_de_datos_1_Conductividad_Salida"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "caudalInstantaneo"
+                                    ]
+                                },
+                                "then": "$Caudal_Instantaneo_Osmosis"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "temperaturaDistribucion"
+                                    ]
+                                },
+                                "then": "$Temperatura_Loop_Distribucion"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "temperatura206"
+                                    ]
+                                },
+                                "then": "$Temperatura_TK_206"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "Valor_Ozono_TK211"
+                                    ]
+                                },
+                                "then": "$Valor_Ozono_TK211"
+                            },
+                            {
+                                "case": {
+                                    "$eq": [
+                                        "@urlParam.var@",
+                                        "PH_Agua_Entrada"
+                                    ]
+                                },
+                                "then": "$PH_Agua_Entrada"
+                            }
+                        ],
+                        "default": "$Caudal_Agua_Entrada"
+                    }
+                }
+            }
+        },
+        {
+            "$sort": {
+                "createdAt": -1
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "device": "$deviceId",
+                    "date": {
+                        "$dateFromParts": {
+                            "year": {
+                                "$year": "$createdAt"
+                            },
+                            "month": {
+                                "$month": "$createdAt"
+                            },
+                            "day": {
+                                "$dayOfMonth": "$createdAt"
+                            },
+                            "hour": {
+                                "$hour": "$createdAt"
+                            },
+                            "minute": {
+                                "$subtract": [
+                                    {
+                                        "$minute": "$createdAt"
+                                    },
+                                    {
+                                        "$mod": [
+                                            {
+                                                "$minute": "$createdAt"
+                                            },
+                                            10
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "deviceName": {
+                    "$first": "$deviceName"
+                },
+                "firstSeen": {
+                    "$last": "$createdAt"
+                },
+                "lastSeen": {
+                    "$first": "$createdAt"
+                },
+                "varSeries": {
+                    "$push": {
+                        "$cond": {
+                            "if": {
+                                "$ne": [
+                                    {
+                                        "$type": "$var"
+                                    },
+                                    10
+                                ]
+                            },
+                            "then": {
+                                "name": "$createdAt",
+                                "value": "$var"
+                            },
+                            "else": "$$REMOVE"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$set": {
+                "device": {
+                    "$arrayElemAt": [
+                        "$device.name",
+                        0
+                    ]
+                }
+            }
+        },
+        {
+            "$sort": {
+                "_id.date": -1
+            }
+        },
+        {
+            "$bucketAuto": {
+                "groupBy": "$_id.device",
+                "buckets": 1,
+                "output": {
+                    "var": {
+                        "$push": {
+                            "name": "$_id.date",
+                            "value": {
+                                "$avg": "$varSeries.value"
+                            },
+                            "min": {
+                                "$min": "$varSeries.value"
+                            },
+                            "max": {
+                                "$max": "$varSeries.value"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$set": {
+                "param": "@urlParam.var@"
+            }
+        }
+    ]
+}

@@ -589,851 +589,126 @@
                         }
                     },
                     {
-                        "$facet": {
-                            "caudalVol": [
-                                {
-                                    "$group": {
-                                        "_id": {
-                                            "deviceId": "$deviceId",
-                                            "date": {
-                                                "$dateFromParts": {
-                                                    "year": {
-                                                        "$year": "$timezone"
-                                                    },
-                                                    "month": {
-                                                        "$month": "$timezone"
-                                                    },
-                                                    "day": {
-                                                        "$dayOfMonth": "$timezone"
-                                                    },
-                                                    "hour": {
-                                                        "$hour": "$timezone"
-                                                    }
-                                                }
-                                            }
+                        "$set": {
+                            "totalMixer1": {
+                                "value": {
+                                    "$subtract": [
+                                        {
+                                            "$first": "$totalMixer1"
                                         },
-                                        "totalWell3": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell3",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell3"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell5": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell5",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell5"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell7": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell7",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell7"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell8": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell8",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell8"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell9": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell9",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell9"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell10": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell10",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell10"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell11": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell11",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell11"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell12": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell12",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell12"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
+                                        {
+                                            "$last": "$totalMixer1"
                                         }
-                                    }
+                                    ]
                                 },
-                                {
-                                    "$set": {
-                                        "totalWell3": {
-                                            "$subtract": [
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell3.value",
-                                                        0
-                                                    ]
-                                                },
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell3.value",
-                                                        3
-                                                    ]
-                                                }
-                                            ]
+                                "name": "$createdAt"
+                            },
+                            "totalMixer2": {
+                                "value": {
+                                    "$subtract": [
+                                        {
+                                            "$first": "$totalMixer2"
                                         },
-                                        "totalWell5": {
-                                            "$subtract": [
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell5.value",
-                                                        0
-                                                    ]
-                                                },
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell5.value",
-                                                        3
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "totalWell7": {
-                                            "$subtract": [
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell7.value",
-                                                        0
-                                                    ]
-                                                },
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell7.value",
-                                                        3
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "totalWell8": {
-                                            "$subtract": [
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell8.value",
-                                                        0
-                                                    ]
-                                                },
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell8.value",
-                                                        3
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "totalWell9": {
-                                            "$subtract": [
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell9.value",
-                                                        0
-                                                    ]
-                                                },
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell9.value",
-                                                        3
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "totalWell10": {
-                                            "$subtract": [
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell10.value",
-                                                        0
-                                                    ]
-                                                },
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell10.value",
-                                                        3
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "totalWell11": {
-                                            "$subtract": [
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell11.value",
-                                                        0
-                                                    ]
-                                                },
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell11.value",
-                                                        3
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "totalWell12": {
-                                            "$subtract": [
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell12.value",
-                                                        0
-                                                    ]
-                                                },
-                                                {
-                                                    "$arrayElemAt": [
-                                                        "$totalWell12.value",
-                                                        3
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        "fin": {
-                                            "$arrayElemAt": [
-                                                "$totalWell3.name",
-                                                0
-                                            ]
-                                        },
-                                        "inicio": {
-                                            "$arrayElemAt": [
-                                                "$totalWell3.name",
-                                                3
-                                            ]
+                                        {
+                                            "$last": "$totalMixer2"
                                         }
-                                    }
+                                    ]
                                 },
-                                {
-                                    "$sort": {
-                                        "_id.date": -1
-                                    }
-                                },
-                                {
-                                    "$limit": 1
-                                }
-                            ],
-                            "currDay": [
-                                {
-                                    "$group": {
-                                        "_id": {
-                                            "$dateFromParts": {
-                                                "year": {
-                                                    "$year": "$timezone"
-                                                },
-                                                "month": {
-                                                    "$month": "$timezone"
-                                                },
-                                                "day": {
-                                                    "$dayOfMonth": "$timezone"
-                                                }
-                                            }
+                                "name": "$createdAt"
+                            },
+                            "totalMixer3": {
+                                "value": {
+                                    "$subtract": [
+                                        {
+                                            "$first": "$totalMixer3"
                                         },
-                                        "totalWell3": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell3",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell3"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "pulseWell3": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$and": [
-                                                            {
-                                                                "$ne": [
-                                                                    "$pulseWell3",
-                                                                    "-"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$pulseWell3"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell5": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell5",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell5"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "pulseWell5": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$and": [
-                                                            {
-                                                                "$ne": [
-                                                                    "$pulseWell5",
-                                                                    "-"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$pulseWell5"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell7": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell7",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell7"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "pulseWell7": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$and": [
-                                                            {
-                                                                "$ne": [
-                                                                    "$pulseWell7",
-                                                                    "-"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$pulseWell7"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell8": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell8",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell8"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "pulseWell8": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$and": [
-                                                            {
-                                                                "$ne": [
-                                                                    "$pulseWell8",
-                                                                    "-"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$pulseWell8"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell9": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell9",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell9"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "pulseWell9": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$and": [
-                                                            {
-                                                                "$ne": [
-                                                                    "$pulseWell9",
-                                                                    "-"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$pulseWell9"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell10": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell10",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell10"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "pulseWell10": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$and": [
-                                                            {
-                                                                "$ne": [
-                                                                    "$pulseWell10",
-                                                                    "-"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$pulseWell10"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell11": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell11",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell11"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "pulseWell11": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$and": [
-                                                            {
-                                                                "$ne": [
-                                                                    "$pulseWell11",
-                                                                    "-"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$pulseWell11"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "totalWell12": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$ne": [
-                                                            "$totalWell12",
-                                                            "-"
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$totalWell12"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
-                                        },
-                                        "pulseWell12": {
-                                            "$push": {
-                                                "$cond": {
-                                                    "if": {
-                                                        "$and": [
-                                                            {
-                                                                "$ne": [
-                                                                    "$pulseWell12",
-                                                                    "-"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "then": {
-                                                        "name": "$createdAt",
-                                                        "value": "$pulseWell12"
-                                                    },
-                                                    "else": "$$REMOVE"
-                                                }
-                                            }
+                                        {
+                                            "$last": "$totalMixer3"
                                         }
-                                    }
+                                    ]
                                 },
-                                {
-                                    "$set": {
-                                        "totalWell3": {
-                                            "$subtract": [
-                                                {
-                                                    "$first": "$totalWell3.value"
-                                                },
-                                                {
-                                                    "$last": "$totalWell3.value"
-                                                }
-                                            ]
+                                "name": "$createdAt"
+                            },
+                            "totalMixer4": {
+                                "value": {
+                                    "$subtract": [
+                                        {
+                                            "$first": "$totalMixer4"
                                         },
-                                        "totalWell5": {
-                                            "$subtract": [
-                                                {
-                                                    "$first": "$totalWell5.value"
-                                                },
-                                                {
-                                                    "$last": "$totalWell5.value"
-                                                }
-                                            ]
-                                        },
-                                        "totalWell7": {
-                                            "$subtract": [
-                                                {
-                                                    "$first": "$totalWell7.value"
-                                                },
-                                                {
-                                                    "$last": "$totalWell7.value"
-                                                }
-                                            ]
-                                        },
-                                        "totalWell8": {
-                                            "$subtract": [
-                                                {
-                                                    "$first": "$totalWell8.value"
-                                                },
-                                                {
-                                                    "$last": "$totalWell8.value"
-                                                }
-                                            ]
-                                        },
-                                        "totalWell9": {
-                                            "$subtract": [
-                                                {
-                                                    "$first": "$totalWell9.value"
-                                                },
-                                                {
-                                                    "$last": "$totalWell9.value"
-                                                }
-                                            ]
-                                        },
-                                        "totalWell10": {
-                                            "$subtract": [
-                                                {
-                                                    "$first": "$totalWell10.value"
-                                                },
-                                                {
-                                                    "$last": "$totalWell10.value"
-                                                }
-                                            ]
-                                        },
-                                        "totalWell11": {
-                                            "$subtract": [
-                                                {
-                                                    "$first": "$totalWell11.value"
-                                                },
-                                                {
-                                                    "$last": "$totalWell11.value"
-                                                }
-                                            ]
-                                        },
-                                        "totalWell12": {
-                                            "$subtract": [
-                                                {
-                                                    "$first": "$totalWell12.value"
-                                                },
-                                                {
-                                                    "$last": "$totalWell12.value"
-                                                }
-                                            ]
-                                        },
-                                        "pulseWell3": {
-                                            "$first": "$pulseWell3"
-                                        },
-                                        "pulseWell5": {
-                                            "$first": "$pulseWell5"
-                                        },
-                                        "pulseWell7": {
-                                            "$first": "$pulseWell7"
-                                        },
-                                        "pulseWell8": {
-                                            "$first": "$pulseWell8"
-                                        },
-                                        "pulseWell9": {
-                                            "$first": "$pulseWell9"
-                                        },
-                                        "pulseWell10": {
-                                            "$first": "$pulseWell10"
-                                        },
-                                        "pulseWell11": {
-                                            "$first": "$pulseWell11"
-                                        },
-                                        "pulseWell12": {
-                                            "$first": "$pulseWell12"
+                                        {
+                                            "$last": "$totalMixer4"
                                         }
-                                    }
-                                }
-                            ],
-                            "alertTypes": [
-                                {
-                                    "$limit": 1
+                                    ]
                                 },
-                                {
-                                    "$lookup": {
-                                        "from": "FormLog",
-                                        "let": {},
-                                        "pipeline": [
-                                            {
-                                                "$match": {
-                                                    "$and": [
-                                                        {
-                                                            "enterpriseId": {
-                                                                "$oid": "619d3a500f578700128c30a1"
-                                                            }
-                                                        },
-                                                        {
-                                                            "collectionName": "alertTypes2"
-                                                        },
-                                                        {
-                                                            "deletedAt": {
-                                                                "$exists": false
-                                                            }
-                                                        },
-                                                        {
-                                                            "data": {
-                                                                "$exists": true
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "$project": {
-                                                    "_id": 0,
-                                                    "data": 1
-                                                }
-                                            }
-                                        ],
-                                        "as": "arr"
-                                    }
+                                "name": "$createdAt"
+                            },
+                            "totalMixer5": {
+                                "value": {
+                                    "$subtract": [
+                                        {
+                                            "$first": "$totalMixer5"
+                                        },
+                                        {
+                                            "$last": "$totalMixer5"
+                                        }
+                                    ]
                                 },
-                                {
-                                    "$project": {
-                                        "_id": 0,
-                                        "arr": 1
-                                    }
-                                }
-                            ],
-                            "assets": [
-                                {
-                                    "$limit": 1
+                                "name": "$createdAt"
+                            },
+                            "totalMixer6": {
+                                "value": {
+                                    "$subtract": [
+                                        {
+                                            "$first": "$totalMixer6"
+                                        },
+                                        {
+                                            "$last": "$totalMixer6"
+                                        }
+                                    ]
                                 },
-                                {
-                                    "$lookup": {
-                                        "from": "FormLog",
-                                        "let": {},
-                                        "pipeline": [
-                                            {
-                                                "$match": {
-                                                    "$and": [
-                                                        {
-                                                            "enterpriseId": {
-                                                                "$oid": "619d3a500f578700128c30a1"
-                                                            }
-                                                        },
-                                                        {
-                                                            "collectionName": "waterAssets"
-                                                        },
-                                                        {
-                                                            "deletedAt": {
-                                                                "$exists": false
-                                                            }
-                                                        },
-                                                        {
-                                                            "data": {
-                                                                "$exists": true
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "$project": {
-                                                    "_id": 0,
-                                                    "data": 1
-                                                }
-                                            }
-                                        ],
-                                        "as": "arr"
-                                    }
-                                },
-                                {
-                                    "$project": {
-                                        "_id": 0,
-                                        "arr": 1
-                                    }
-                                }
-                            ]
+                                "name": "$createdAt"
+                            }
+                        }
+                    },
+                    {
+                        "$set": {
+                            "titleselected": "@urlParam.titleselected@",
+                            "totalMixer1": {
+                                "$first": "$totalMixer1.value"
+                            },
+                            "totalMixer2": {
+                                "$first": "$totalMixer2.value"
+                            },
+                            "totalMixer3": {
+                                "$first": "$totalMixer3.value"
+                            },
+                            "totalMixer4": {
+                                "$first": "$totalMixer4.value"
+                            },
+                            "totalMixer5": {
+                                "$first": "$totalMixer5.value"
+                            },
+                            "totalMixer6": {
+                                "$first": "$totalMixer6.value"
+                            },
+                            "pulseMixer1": {
+                                "$first": "$pulseMixer1"
+                            },
+                            "pulseMixer2": {
+                                "$first": "$pulseMixer2"
+                            },
+                            "pulseMixer3": {
+                                "$first": "$pulseMixer3"
+                            },
+                            "pulseMixer4": {
+                                "$first": "$pulseMixer4"
+                            },
+                            "pulseMixer5": {
+                                "$first": "$pulseMixer5"
+                            },
+                            "pulseMixer6": {
+                                "$first": "$pulseMixer6"
+                            }
                         }
                     }
                 ]
